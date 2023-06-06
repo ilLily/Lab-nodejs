@@ -1,0 +1,61 @@
+Notes
+
+LAB20230605
+
+==CJS(2009)==
+export: module.exports
+import: require('./') => ./folder/file 若副檔名是js檔或json檔，就可省略。兩者同時有，js優先
+
+==MJS(2015) or ESM== 使用ES6的module
+export: export
+import: import {} from "./~~.js" =>副檔名一定要加！！
+
+* 若CJS 跟 ESM 混用的時候，ESM的副檔名要改 .msj
+
+==package.json==
+* 專案預設會是CJS，若整個專案要改ESM，在package.json加入 "type":"module"
+* dependencies, 會展示目前專案安裝的所有packages
+* scripts裡面，可以設定 npm 的 params 
+    {1: 只有start, test, 可以直接用 npm start/ npm test 呼叫,
+    2: 其它的key，都要用npm run key來呼叫}
+
+==npm global install==
+1. npm i -g nodemon （啓動node）
+適合開發環境用
+（global package, run node. but do not need to restart everytime something change in the project)
+
+2. npm i -g pm2 （啓動node）
+適合正式環境用
+pm2 start filename
+pm2 status(can check status ex:online)
+pm2 restart 0
+pm2 stop 0
+pm2 del 0
+
+==npm project install==
+1. npm i express 
+用法： 
+const express = require('express')
+const app = express();
+app.get('/', (req,res)=>{
+    res.send()
+    req.params()
+})
+app.listen(port,()=>{
+    console.log('start server, listening on port:...)
+})
+
+2. npm i dotenv
+用法： require('dotenv).config();=>會自動找.env檔
+    require('dotenv').config({
+        path: __dirname + '/production.env'
+    });=>會透過路徑去找相對的env檔
+
+__dirname, 是CJS專有的變數，ESM沒有
+
+
+
+
+
+
+

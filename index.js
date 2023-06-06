@@ -8,7 +8,6 @@ if (process.argv[2] === 'production') {
     require('dotenv').config()
 }
 
-
 const express = require('express');
 
 const app = express();
