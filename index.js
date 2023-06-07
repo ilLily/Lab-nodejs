@@ -41,7 +41,7 @@ app.get('/test-qs', (req, res) => {
 app.get('/json-sales', (req, res) => {
     const data = require(__dirname + '/data/sales');
     // res.send(data[0].name)
-    res.render('json-sales', data)
+    res.render('json-sales', { data })
 })
 
 
@@ -65,9 +65,9 @@ app.post('/test-post-form', (req, res) => {
     res.render('test-post-form', req.body);
     // res.redirect('/')
 })
-// app.get('/test-post-form', (req, res) => {
-//     res.render('test-post-form');
-// })
+app.get('/test-post-form', (req, res) => {
+    res.render('test-post-form');
+})
 
 //file upload
 app.post('/file-upload', upload.single('avatar'), (req, res) => {

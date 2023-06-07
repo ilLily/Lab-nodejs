@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            padding: 0;
+            margin: 0;
+        }
+
+        .img-container {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .img-items>img {
+            width: 300px;
+            height: 300px;
+            object-fit: cover;
+        }
+
+        .test-block {
+            width: 300px;
+            height: 300px;
+            /* border: 1px solid red; */
+            position: relative;
+        }
+
+        .test-img {
+            width: 300px;
+            height: 300px;
+            object-fit: cover;
+        }
+
+        .test-block .btn-close {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: rgba(234, 234, 234, 0.895);
+        }
+
+        .btn-ar {
+            background-color: rgba(234, 234, 234, 0.895);
+        }
+
+        .test-block .moveBtns {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            /* background-color: blanchedalmond; */
+        }
+    </style>
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="container mt-4">
+        <form name="imgForm">
+            <input type="file" name="photo" multiple onchange="upload()">
+        </form>
+        <div class="img-container mt-3"></div>
+    </div>
+
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script>
+        const imgContainer = document.querySelector('.img-container');
+        let imgArr = []
+        imgContainer.addEventListener('click', (event) => {
+            const target = event.target;
+            const btnType = target.getAttribute('data-btnType');
+            const imgFn = target.getAttribute('data-fn');
+            const index = imgArr.indexOf(imgFn);
+            switch (btnType) {
+                case 'close':
+                    imgArr.splice(index, 1);
+                    target.parentElement.remove();
+                    console.log(imgArr);
+                    break;
+                case 'pre':
+                    console.log('pre');
+                    console.log(imgFn);
+                    console.log(index);
+                    console.log(imgArr);
+                    if (index > 0) {
+                        imgArr.splice(index, 1);
+                        imgArr.splice(index - 1, 0, imgFn)
+                    }
+
+                    imgContainer.innerHTML = "";
+                    renderPhotos(imgArr);
+                    break;
+                case 'next':
+                    console.log('next');
+                    if (index > -1 && index < imgArr.length - 1) {
+                        imgArr.splice(index, 1);
+                        imgArr.splice(index + 1, 0, imgFn)
+                    }
+                    console.log(imgArr);
+                    imgContainer.innerHTML = "";
+                    renderPhotos(imgArr);
+                    break;
+            }
+        })
+        //上傳照片
+        async function upload() {
+            const fd = new FormData(document.imgForm)
+            const r = await fetch('file-uploads', {
+                method: 'POST',
+                body: fd
+            })
+            const result = await r.json();
+            console.log(result);
+            // console.log(imgArr);
+            imgArr = imgArr.concat(result);
+            console.log(imgArr);
+            renderPhotos(imgArr);
+        }
+        //展示照片
+        const renderPhotos = (arr) => {
+            const innerText = arr.map(fn => `
+                <div class="test-block me-3 mb-3">
+                    <img class="test-img" src="/img/${fn}" alt="">
+                    <button type="button" class="btn-close" data-btnType="close" data-fn="${fn}"></button>
+                    <div class="moveBtns">
+                        <button type="button" class="btn btn-outline-secondary btn-ar" data-btnType="pre" data-fn="${fn}">&lt;</button>
+                        <button type="button" class="btn btn-outline-secondary btn-ar" data-btnType="next" data-fn="${fn}">&gt;</button>
+                    </div>
+                </div>`).join('');
+            imgContainer.innerHTML = innerText;
+        }
+
+
+    </script>
+</body>
+
+</html>
