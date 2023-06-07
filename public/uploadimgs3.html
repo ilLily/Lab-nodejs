@@ -72,38 +72,32 @@
         let imgArr = []
         imgContainer.addEventListener('click', (event) => {
             const target = event.target;
-            const btnType = target.getAttribute('data-btnType');
-            const imgFn = target.getAttribute('data-fn');
-            const index = imgArr.indexOf(imgFn);
-            switch (btnType) {
-                case 'close':
-                    imgArr.splice(index, 1);
-                    target.parentElement.remove();
-                    console.log(imgArr);
-                    break;
-                case 'pre':
-                    console.log('pre');
-                    console.log(imgFn);
-                    console.log(index);
-                    console.log(imgArr);
-                    if (index > 0) {
+            if (target.tagName === 'BUTTON') {
+                const btnType = target.getAttribute('data-btnType');
+                const imgFn = target.getAttribute('data-fn');
+                const index = imgArr.indexOf(imgFn);
+                switch (btnType) {
+                    case 'close':
                         imgArr.splice(index, 1);
-                        imgArr.splice(index - 1, 0, imgFn)
-                    }
-
-                    imgContainer.innerHTML = "";
-                    renderPhotos(imgArr);
-                    break;
-                case 'next':
-                    console.log('next');
-                    if (index > -1 && index < imgArr.length - 1) {
-                        imgArr.splice(index, 1);
-                        imgArr.splice(index + 1, 0, imgFn)
-                    }
-                    console.log(imgArr);
-                    imgContainer.innerHTML = "";
-                    renderPhotos(imgArr);
-                    break;
+                        target.parentElement.remove();
+                        break;
+                    case 'pre':
+                        if (index > 0) {
+                            imgArr.splice(index, 1);
+                            imgArr.splice(index - 1, 0, imgFn)
+                        }
+                        imgContainer.innerHTML = "";
+                        renderPhotos(imgArr);
+                        break;
+                    case 'next':
+                        if (index > -1 && index < imgArr.length - 1) {
+                            imgArr.splice(index, 1);
+                            imgArr.splice(index + 1, 0, imgFn)
+                        }
+                        imgContainer.innerHTML = "";
+                        renderPhotos(imgArr);
+                        break;
+                }
             }
         })
         //上傳照片
@@ -114,8 +108,6 @@
                 body: fd
             })
             const result = await r.json();
-            console.log(result);
-            // console.log(imgArr);
             imgArr = imgArr.concat(result);
             console.log(imgArr);
             renderPhotos(imgArr);
