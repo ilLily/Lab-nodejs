@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .img-container {
+            display: flex;
+        }
+
+        .img-items>img {
+            width: 300px;
+            height: 300px;
+            object-fit: cover;
+        }
+
+        .test-block {
+            width: 300px;
+            height: 300px;
+            border: 1px solid red;
+        }
+
+        .test-img {
+            width: 300px;
+            height: 300px;
+        }
+    </style>
+    <title>Document</title>
+</head>
+
+<body>
+
+    <form name="imgForm">
+        <input type="file" name="photo" multiple onchange="upload()">
+    </form>
+    <div class="img-container"></div>
+    <div class="test-block">
+        <img class="test-img" src="/img/9ec717c7-fda2-49d3-9bf5-0546d3c1a299.jpg" alt="">
+        <button type="button" class="btn-close"></button>
+    </div>
+
+
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script>
+        const imgContainer = document.querySelector('.img-container')
+        async function upload() {
+            const fd = new FormData(document.imgForm)
+            const r = await fetch('file-uploads', {
+                method: 'POST',
+                body: fd
+            })
+            const result = await r.json();
+
+            console.log(result);
+            console.log(imgContainer);
+            imgContainer.innerHTML = result.map(fn => `<div class=img-items>
+                    <img src="/img/${fn}">
+                    </div>`
+            ).join('');
+            console.log(result);
+
+        }
+    </script>
+</body>
+
+</html>

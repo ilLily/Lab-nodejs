@@ -6,3 +6,15 @@ GET http://localhost:3002/a.html
 
 ###
 POST http://localhost:3002/a.html
+
+###
+POST http://localhost:3002/testPost
+Content-Type: application/x-www-form-urlencoded
+
+name=Lily&age=37
+
+###
+POST http://localhost:3002/testPost
+Content-Type: application/json
+
+{"name":"Lily", "age":"3"}
