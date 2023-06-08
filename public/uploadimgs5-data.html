@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <title>Document</title>
+    <style>
+        .img-container {
+            display: flex;
+        }
+
+        .img-item {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            display: flex;
+            justify-content: center;
+            border: 1px dotted green;
+            background-color: #d1f6f2;
+        }
+
+        .img-item>img {
+            margin: auto;
+            display: block;
+            max-width: 200px;
+            max-height: 200px;
+        }
+
+        .img-item>i {
+            position: absolute;
+            background-color: yellow;
+        }
+
+        .img-item>i.fa-circle-arrow-left {
+            left: 10px;
+            bottom: 10px;
+            color: blue;
+        }
+
+        .img-item>i.fa-circle-arrow-right {
+            right: 10px;
+            bottom: 10px;
+            color: blue;
+        }
+
+        .img-item>i.fa-circle-xmark {
+            right: 10px;
+            top: 10px;
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <form name="form1">
+        <input type="file" name="photo" multiple onchange="uploadImg()" />
+    </form>
+
+    <div class="img-container"></div>
+    <script src="/jquery.min.js"></script>
+    <script>
+
+        let listData = [
+            'a3fa72b0-520e-46bd-9690-352944312c80.jpg',
+            '22714194-d43e-44f7-99c5-d8c2ea89826c.jpg',
+            'ae0797a9-b353-4017-ab57-351828991971.jpg'
+        ];
+
+        const container = document.querySelector(".img-container");
+
+        async function uploadImg() {
+            const fd = new FormData(document.form1);
+
+            const r = await fetch(`/try-uploads`, {
+                method: "POST",
+                body: fd,
+            });
+
+            const result = await r.json();
+            listData = [...listData, ...result];
+
+            renderList();  // 呈現畫面
+        }
+
+        const renderList = () => {
+            container.innerHTML = listData
+                .map(
+                    (fn) => `
+              <div class="img-item" data-id="${fn}">
+                <img src="/img/${fn}" alt=""/>
+                <i class="fa-solid fa-circle-arrow-left" onclick="moveLeft(event)"></i>
+                <i class="fa-solid fa-circle-arrow-right" onclick="moveRight(event)"></i>
+                <i class="fa-solid fa-circle-xmark"  onclick="removeItem(event)"></i>
+              </div>
+              `
+                )
+                .join("");
+        }
+        renderList();
+
+        const moveLeft = (event) => {
+            const newData = [...listData];
+            const imgId = event.target.closest(".img-item").getAttribute('data-id');
+            const currentIndex = newData.findIndex(i => i === imgId);
+            if (currentIndex > 0) {
+                let tmp = newData[currentIndex];
+                newData[currentIndex] = newData[currentIndex - 1];
+                newData[currentIndex - 1] = tmp;
+            }
+            listData = newData;
+            renderList();
+        };
+        const moveRight = (event) => {
+            const newData = [...listData];
+            const imgId = event.target.closest(".img-item").getAttribute('data-id');
+            const currentIndex = newData.findIndex(i => i === imgId);
+            if (currentIndex < newData.length - 1) {
+                let tmp = newData[currentIndex];
+                newData[currentIndex] = newData[currentIndex + 1];
+                newData[currentIndex + 1] = tmp;
+            }
+            listData = newData;
+            renderList();
+        };
+        const removeItem = (event) => {
+            const imgId = event.target.closest(".img-item").getAttribute('data-id');
+
+            listData = listData.filter(i => i !== imgId); // 移除
+            renderList();
+        };
+
+
+    </script>
+</body>
+
+</html>

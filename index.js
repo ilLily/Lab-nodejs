@@ -44,7 +44,29 @@ app.get('/json-sales', (req, res) => {
     res.render('json-sales', { data })
 })
 
+app.get('/my-params1', (req, res) => {
+    res.json(req.params);
+})
 
+app.get('/my-params1/:action?/:id?', (req, res) => {
+    res.json(req.params);
+})
+
+app.get('/my-params2', (req, res) => {
+    res.json(req.url);
+})
+
+app.get(/^\/m\/09\d{2}\-?\d{3}\-?\d{3}$/i, (req, res) => {
+    console.log(req.url);
+    let u = req.url.slice(3);
+    u = u.split("?")[0];
+    u = u.split('-').join('')
+    res.json({ u });
+})
+
+// app.use(require(__dirname + '/routes/admin2'));
+app.use('/', require(__dirname + '/routes/admin2'));
+app.use('/admin/a', require(__dirname + '/routes/admin3'));
 //test-POST
 
 //Middleware=====
@@ -86,6 +108,8 @@ app.post('/file-uploads', upload.array('photo', 10), (req, res) => {
     res.json(req.files.map(fn => fn.filename))
 
 })
+
+
 
 //=========
 
