@@ -1,16 +1,17 @@
 Notes
 
-LAB20230605
+LAB 2023 06 05~ 2023 06 16
 
 ==CJS(2009)==
 export: module.exports
 import: require('./') => ./folder/file 若副檔名是js檔或json檔，就可省略。兩者同時有，js優先
 
+
 ==MJS(2015) or ESM== 使用ES6的module
 export: export
 import: import {} from "./~~.js" =>副檔名一定要加！！
-
 * 若CJS 跟 ESM 混用的時候，ESM的副檔名要改 .msj
+
 
 ==package.json==
 * 專案預設會是CJS，若整個專案要改ESM，在package.json加入 "type":"module"
@@ -19,10 +20,12 @@ import: import {} from "./~~.js" =>副檔名一定要加！！
     {1: 只有start, test, 可以直接用 npm start/ npm test 呼叫,
     2: 其它的key，都要用npm run key來呼叫}
 
-==npm global install==
+
+==============npm global install=====================
 1. npm i -g nodemon （啓動node）
 適合開發環境用
 （global package, run node. but do not need to restart everytime something change in the project)
+
 
 2. npm i -g pm2 （啓動node）
 適合正式環境用
@@ -32,7 +35,8 @@ pm2 restart 0
 pm2 stop 0
 pm2 del 0
 
-==npm project install==
+
+==============npm project install===================
 1. npm i express 
 用法： 
 const express = require('express')
@@ -53,9 +57,61 @@ app.listen(port,()=>{
 
 __dirname, 是CJS專有的變數，ESM沒有
 
+3. npm i ejs
+用法： app.set('view engine', 'ejs');
+
+4. npm i multer
+用法： MidedleWave upload.array("欄位name", 最大上傳數), upload.single("欄位name")
+
+5. npm i uuid
+用法： 
+============== express app ==============
+app.set() // ejs-view engine
+app.use() // 404, express.urlencoded 解釋body, express.json() MW, express.static()
+app.get() 
+app.post()
+app.listen() // port
+
+============== res ==============
+res.send() //head(text/html, text/plain, application/json )
+res.json() //head(application/json)
+res.render() //head(???) 後端render??? ejs???
+res.redirect() //
+*以上幾個，在一個回應裡不可重覆用，除非在if else conditional situation
+*以上幾個都會自動設head, 做完也自動break,
+
+res.type() //Content-type
+res.status() // 200,404
+
+============== req ==============
+req.query // get queryString
+req.params //
+req.url //
+req.file // =>object (fieldname:欄位name, originalname:上傳時的檔案全名，mimetype:副檔名，destination:存放位置，filename:存放時的檔名，path: 路徑，encoding，size)
 
 
+============== fs 套件 ============== 
+fs.rename
+fs.unlink
 
+============== Header Content-Type ============== 
+text/html
+text/plain
+text/css
 
+application/json
+application/xml
+application/pdf
+application/x-www-form-urlencoded
 
+multipart/form-data
 
+image/jpeg：JPEG 圖像。
+image/png：PNG 圖像。
+
+audio/mpeg：MPEG 音頻文件。
+video/mp4：MP4 影片文件。
+
+multipart/form-data：這種 Content-Type 通常用於上傳文件或提交包含二進制數據的表單。當使用 multipart/form-data 時，表單數據會被分隔成多個部分（parts），每個部分都有自己的標頭（包括 Content-Type）和內容，並且可以包含二進制文件數據。這種形式的表單提交通常用於文件上傳功能。
+
+application/x-www-form-urlencoded：這種 Content-Type 是最常見的表單提交方式。在這種形式下，表單數據被編碼成 URL 參數的形式，並以鍵值對的方式進行傳遞。例如，key1=value1&key2=value2。這種形式的表單提交對於傳遞較簡單的文本數據非常有效，但對於大型二進制文件或包含特殊字符的數據可能不適用。

@@ -76,13 +76,14 @@ app.post('/file-upload', upload.single('avatar'), (req, res) => {
 
 })
 app.post('/file-uploads', upload.array('photo', 10), (req, res) => {
-    console.log(req.files);
-    const fileNameArr = []
-    const data = req.files;
-    for (let d of data) {
-        fileNameArr.push(d.filename);
-    }
-    res.json(fileNameArr);
+    // console.log(req.files);
+    // const fileNameArr = []
+    // const data = req.files;
+    // for (let d of data) {
+    //     fileNameArr.push(d.filename);
+    // }
+    // res.json(fileNameArr);
+    res.json(req.files.map(fn => fn.filename))
 
 })
 
