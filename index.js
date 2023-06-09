@@ -11,20 +11,31 @@ if (process.argv[2] === 'production') {
 //const multer = require('multer')
 // const upload = multer({ dest: 'temp_uploads' })
 const upload = require(__dirname + '/modules/img-upload');
-
 const express = require('express');
 const app = express();
-
+const session = require('express-session');
+const MysqlStore = require('express-mysql-session')(session);
+const moment = require('moment-timezone');
+const dayjs = require('dayjs');
+const db = require(__dirname + "/modules/db_connect");
+const sessionStore = new MysqlStore({}, db);
 
 app.set('view engine', 'ejs');
-
 //Top-level Middleware
-
+app.use(session({
+    saveUninitialized: false,
+    resave: false,
+    store: sessionStore,
+    secret: 'adslgoiwerlkjasdf',
+    cookie: {
+        maxAge: 1200_000,
+    }
+}))
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 
-//test-GET res.render & res.json()
+//==============test-GET ===============
 app.get('/', (req, res) => {
     // res.send('<h1>Hello! you made it!!</h1>')
     res.render('home', { name: "Lily", age: 4, db_user: process.env.DB_USER })
@@ -64,14 +75,48 @@ app.get(/^\/m\/09\d{2}\-?\d{3}\-?\d{3}$/i, (req, res) => {
     res.json({ u });
 })
 
+app.get('/test-sess', (req, res) => {
+    req.session.count = req.session.count || 0;
+    req.session.count++;
+    req.session.hello = 'haha';
+    res.json({
+        count: req.session.count,
+        hello: req.session.hello,
+        session: req.session
+    });
+})
+
+app.get('/test-moment', (req, res) => {
+    const fm = 'YYYY-MM-DD HH:mm:ss';
+    const dayjs1 = dayjs();
+    const dayjs2 = dayjs('2023/08/16');
+    const d3 = new Date();
+    const moment1 = moment();
+
+    res.json({
+        d1: dayjs1.format(fm),
+        d2: dayjs2.format(fm),
+        d3: d3,
+        m1: moment1.format(fm),
+        m2: moment1.tz('Europe/London').format(fm),
+
+    })
+})
+
+//非同步 (db.query會回傳兩組陣列, 第一組是資料-rows, 第二組是field-DB欄位的資枓, 不需要的話,接資料的陣列[], 放一個變數就好);
+app.get('/test-db', async (req, res) => {
+    const [data] = await db.query("SELECT * FROM `ord_cart` LIMIT 2")
+    res.json(data);
+})
+
+
+//===========route=================
 // app.use(require(__dirname + '/routes/admin2'));
 app.use('/', require(__dirname + '/routes/admin2'));
 app.use('/admin/a', require(__dirname + '/routes/admin3'));
-//test-POST
+app.use('/addressBook', require(__dirname + '/routes/address_book'))
 
-//Middleware=====
-// const urlencodedParser = express.urlencoded({ extended: false });
-// const jsonParser = express.json();
+//==========test-POST===============
 
 app.post('/testPost', (req, res) => {
     console.log(req.body);
@@ -83,15 +128,17 @@ app.post('/testPost', (req, res) => {
     res.json(req.body);
 
 })
-app.post('/test-post-form', (req, res) => {
-    res.render('test-post-form', req.body);
-    // res.redirect('/')
-})
+//===========get post 同一支==========
 app.get('/test-post-form', (req, res) => {
     res.render('test-post-form');
 })
 
-//file upload
+app.post('/test-post-form', (req, res) => {
+    res.render('test-post-form', req.body);
+    // res.redirect('/')
+})
+
+//===========file upload============
 app.post('/file-upload', upload.single('avatar'), (req, res) => {
     console.log(req.file);
     res.json(req.file);
@@ -109,9 +156,7 @@ app.post('/file-uploads', upload.array('photo', 10), (req, res) => {
 
 })
 
-
-
-//=========
+//========= static ===========
 
 app.use(express.static('public'));
 app.use(express.static('node_modules/bootstrap/dist'));

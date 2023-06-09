@@ -66,6 +66,10 @@ __dirname, 是CJS專有的變數，ESM沒有
 5. npm i uuid
 用法： uuid.v4() =>產生新的id
 
+6. npm i express-session
+7. npm i moment-timezone
+8. npm i dayjs
+9. mpn i mysql2
 
 ============== express app ==============
 app.set()     // ejs-view engine
@@ -85,7 +89,7 @@ res.redirect() //沒有contentType
 
 res.type() //Content-type
 res.status() // 200,404
-
+res.locals
 ============== req ==============
 req.query       // get queryString 
 req.params      // 拿到路徑參數 => OBJECT path parameters
