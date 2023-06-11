@@ -21,6 +21,8 @@ const db = require(__dirname + "/modules/db_connect");
 const sessionStore = new MysqlStore({}, db);
 
 app.set('view engine', 'ejs');
+
+
 //Top-level Middleware
 app.use(session({
     saveUninitialized: false,
@@ -152,6 +154,7 @@ app.post('/file-uploads', upload.array('photo', 10), (req, res) => {
     //     fileNameArr.push(d.filename);
     // }
     // res.json(fileNameArr);
+    console.log(req.files);
     res.json(req.files.map(fn => fn.filename))
 
 })
