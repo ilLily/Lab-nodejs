@@ -1,0 +1,65 @@
+<%- include("../parts/html-head")%>
+    <%- include("../parts/navbar")%>
+    <%
+    let params = {};
+    if(search){
+        params={...params,search};
+    }
+    %>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-6">
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination">
+                        <!-- <li class="page-item"><a class="page-link" href="#">Previous</a></li> -->
+                        <% for(let p = page-5; p<page+5; p++) if(p>=1 && p<=totalPages){%>
+                        <li class="page-item <%= p===page? 'active': '' %>"><a class="page-link" href="?<%-new URLSearchParams({page:p, ...params})%>"><%=p%></a></li>
+                        <%}%>
+                        <!-- <li class="page-item"><a class="page-link" href="#">Next</a></li> -->
+                    </ul>
+                </nav>
+            </div>
+            <div class="col-6">
+                <form class="d-flex" role="search">
+                    <input class="form-control me-2" type="search" placeholder="Search" 
+                    name="search" value="<%= locals.search? search: ""%>"
+                    aria-label="Search">
+                    <button class="btn btn-outline-success" type="submit">Search</button>
+                </form>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col"><i class="fa-solid fa-trash"></i></th>
+                    <th scope="col">sid</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">mobile</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Birthday</th>
+                    <th scope="col">address</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% for (let r of row){ %>
+                <tr>
+                <td><a href="javascript:"><i class="fa-solid fa-trash"></i></a></td>
+                   <td><%=r.sid%></td>
+                   <td><%=r.name%></td>
+                   <td><%=r.mobile%></td>
+                   <td><%=r.email%></td>
+                   <td><%=r.birthday%></td>
+                   <td><%=r.address%></td>
+                </tr>
+            <% } %>
+            </tbody>
+        </table>
+            </div>
+        </div>
+        
+    </div>
+        <%- include("../parts/scripts")%>
+            <%- include("../parts/html-foot")%>

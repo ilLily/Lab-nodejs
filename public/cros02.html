@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CROS02</title>
+</head>
+<body>
+    <pre id="info"></pre>
+    <script>
+        const info = document.querySelector('#info');
+        fetch('https://randomuser.me/api/')
+        .then(r=>r.json())
+        .then(data=>{
+            console.log(data);
+            info.innerHTML = JSON.stringify(data, null, 4)
+        });
+     
+    </script>
+</body>
+</html>

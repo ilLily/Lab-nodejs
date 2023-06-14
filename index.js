@@ -19,9 +19,20 @@ const moment = require('moment-timezone');
 const dayjs = require('dayjs');
 const db = require(__dirname + "/modules/db_connect");
 const sessionStore = new MysqlStore({}, db);
+const cors = require('cors');
 
 app.set('view engine', 'ejs');
 //Top-level Middleware
+const whitelist = ['http://localhost:5500'];
+const corsOptions ={
+    credentials:true,
+    origin:(origin,cb)=>{
+        console.log({origin});
+        cb(null,true);
+    }
+}
+app.use(cors(corsOptions));
+
 app.use(session({
     saveUninitialized: false,
     resave: false,
@@ -34,8 +45,33 @@ app.use(session({
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
+//自訂ＭＷ
+app.use((req,res,next)=>{
+    res.locals.nickname = '小新';
+    res.locals.title = '小新的網站';
+    res.locals.toDateString = (d)=>{
+        const fm = "YYYY-MM-DD";
+        const djs = dayjs(d);
+        return djs.format(fm);
+    }
+        res.locals.toDatetimeString = (d)=>{
+        const fm = "YYYY-MM-DD HH:mm:ss";
+        const djs = dayjs(d);
+        return djs.format(fm);
+    }
+    next();
+})
 
 //==============test-GET ===============
+
+// app.get('/login', (req, res) => {
+//     let data = {
+//         flashMsg: req.session.flashMsg || '',
+//         loginUser: req.session.loginUser
+//     }
+//     delete req.session.flashMsg;
+//     res.render('login', {});
+// })
 app.get('/', (req, res) => {
     // res.send('<h1>Hello! you made it!!</h1>')
     res.render('home', { name: "Lily", age: 4, db_user: process.env.DB_USER })
@@ -107,6 +143,14 @@ app.get('/test-moment', (req, res) => {
 app.get('/test-db', async (req, res) => {
     const [data] = await db.query("SELECT * FROM `ord_cart` LIMIT 2")
     res.json(data);
+})
+
+app.get('/yahoo',async(req,res)=>{
+    fetch('https://tw.yahoo.com/')
+    .then(r=>r.text())
+    .then(data =>{
+        res.send(data);
+    })
 })
 
 

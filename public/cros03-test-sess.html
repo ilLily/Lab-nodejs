@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CROS03 test-sess</title>
+</head>
+<body>
+    <pre id="info"></pre>
+    <script>
+        //拜訪http://127.0.0.1:5500/public/cros03-test-sess.html
+        const info = document.querySelector('#info');
+        fetch('http://localhost:3002/test-sess',{
+            credentials:'include'
+        })
+        .then(r=>r.json())
+        .then(data=>{
+            console.log(data);
+            info.innerHTML = JSON.stringify(data, null, 4)
+        });
+     
+    </script>
+</body>
+</html>
