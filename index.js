@@ -22,6 +22,8 @@ const sessionStore = new MysqlStore({}, db);
 const cors = require('cors');
 
 app.set('view engine', 'ejs');
+
+
 //Top-level Middleware
 const whitelist = ['http://localhost:5500'];
 const corsOptions ={
@@ -196,6 +198,7 @@ app.post('/file-uploads', upload.array('photo', 10), (req, res) => {
     //     fileNameArr.push(d.filename);
     // }
     // res.json(fileNameArr);
+    console.log(req.files);
     res.json(req.files.map(fn => fn.filename))
 
 })

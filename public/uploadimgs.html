@@ -18,7 +18,7 @@
 
         async function upload() {
             const fd = new FormData(document.imgForm)
-            const r = await fetch('file-uploads', {
+            const r = await fetch('file-upload', {
                 method: 'POST',
                 body: fd
             })
