@@ -46,7 +46,7 @@
             <tbody>
                 <% for (let r of row){ %>
                 <tr>
-                <td><a href="javascript:"><i class="fa-solid fa-trash"></i></a></td>
+                <td><a href="javascript:deleteRow(<%=r.sid%>)"><i class="fa-solid fa-trash"></i></a></td>
                    <td><%=r.sid%></td>
                    <td><%=r.name%></td>
                    <td><%=r.mobile%></td>
@@ -62,4 +62,19 @@
         
     </div>
         <%- include("../parts/scripts")%>
+        <script>
+            const deleteRow = (sid)=>{
+                fetch(`/addressBook/${sid}`,{
+                    method: "DELETE"
+                })
+                .then((r)=>r.json())
+                .then((data)=>{
+                    console.log(JSON.stringify(data, null,4));
+                    location.reload();
+                })
+                .catch((ex)=>{
+                    console.log(ex);
+                })
+            }
+        </script>
             <%- include("../parts/html-foot")%>

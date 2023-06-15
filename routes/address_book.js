@@ -2,6 +2,9 @@ const express = require('express');
 const db = require(__dirname + "/../modules/db_connect");
 const router = express.Router();
 const dayjs = require('dayjs');
+const upload = require(__dirname + '/../modules/img-upload');
+const multipartParser = upload.none();
+
 
 const getListData = async(req)=>{
     let output = {
@@ -71,6 +74,65 @@ router.get('/', async (req, res) => {
    res.render('address-book/index', output);
 })
 
+router.get('/add', async (req, res) => {
+   res.render('address-book/add');
+})
+
+router.post('/', multipartParser, async (req, res) => {
+    const data = {...req.body};
+
+    const sql = "INSERT INTO `address_book`"+
+    "( `name`, `email`, `mobile`, `birthday`, `address`, `created_at`) "+
+    "VALUES (?,?,?,?,?,now())";
+    let birthday = dayjs(data.birthday);
+    if(birthday.isValid()){
+        data.birthday = birthday.format("YYYY-mm-dd");
+    }else{
+        data.birthday = null;
+    }
+
+    const [result] = await db.query(sql,[
+        data.name,
+        data.email,
+        data.mobile,
+        data.birthday,
+        data.address,
+    ])
+   res.json({
+        result,
+        postData: data
+    })
+})
+
+router.post('/add', multipartParser, async (req, res) => {
+
+    const sql = "INSERT INTO `address_book` set?";
+    const dataObj = {...req.body};
+    delete dataObj.name1;
+
+    dataObj.created_at = new Date();
+
+    let birthday = dayjs(dataObj.birthday);
+    if(birthday.isValid()){
+        dataObj.birthday = birthday.format("YYYY-mm-dd");
+    }else{
+        dataObj.birthday = null;
+    }
+
+    const [result] = await db.query(sql,[dataObj])
+   res.json({
+        result,
+        postData: dataObj,
+    })
+})
+
+router.get('/add-try', async (req, res) => {
+   res.render('address-book/add-try');
+})
+
+router.post('/add-try',multipartParser, async (req, res) => {
+   res.json(req.body);
+})
 
 router.delete('/:sid',async (req,res)=>{
     const {sid} = req.params;

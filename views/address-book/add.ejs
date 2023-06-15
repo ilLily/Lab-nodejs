@@ -1,0 +1,56 @@
+<%- include("../parts/html-head")%>
+    <%- include("../parts/navbar")%>
+    <div class="container">
+        <div class="row">
+            <div class="col-6">
+                <div class="card" >
+                    <div class="card-body">
+                    <form name="form1" onsubmit="addMember(event)">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">name address</label>
+                            <input type="text" class="form-control" id="name" name="name">
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="text" class="form-control" id="email" name="email">
+                        </div>
+                        <div class="mb-3">
+                            <label for="mobile" class="form-label">mobile</label>
+                            <input type="text" class="form-control" id="mobile" name="mobile">
+                        </div>   
+                        <div class="mb-3">
+                            <label for="birthday" class="form-label">birthday</label>
+                            <input type="date" class="form-control" id="birthday" name="birthday">
+                        </div>
+                        <div class="mb-3">
+                            <label for="address" class="form-label">address</label>
+                            <input type="text" class="form-control" id="address" name="address">
+                        </div>
+                        <input type="text" class="form-control" id="n-1" name="name1">
+                        <input type="text" class="form-control" id="n-2" name="name1">
+
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+        
+        <%- include("../parts/scripts")%>
+        <script>
+         const addMember = (event)=>{
+            event.preventDefault();
+            const fd = new FormData(document.form1);
+          
+            fetch('/addressBook/add',{
+                method: "POST",
+                body:fd,
+            })
+            .then(r=>r.json())
+            .then(obj=>{
+                console.log(JSON.stringify(obj,null,4))
+            })
+         }
+        </script>
+            <%- include("../parts/html-foot")%>
