@@ -20,7 +20,7 @@ const dayjs = require('dayjs');
 const db = require(__dirname + "/modules/db_connect");
 const sessionStore = new MysqlStore({}, db);
 const cors = require('cors');
-
+const bcrypt = require('bcryptjs');
 app.set('view engine', 'ejs');
 
 
@@ -155,7 +155,16 @@ app.get('/yahoo',async(req,res)=>{
     })
 })
 
+app.get('/try-bcrypt', async(req,res)=>{
+    const hash = await bcrypt.hash('banana',10);
+    res.send(hash);
+});
 
+app.get('/try-bcrypt2', async(req,res)=>{
+    const hash = '$2a$10$S43fdZ/x2BzUw5DCdcn6wesxsT6kmmNZ6ZcWZnl4xwtOV8WGlN0ae';
+    const result = await bcrypt.compare('banana2', hash);
+    res.send({result});
+});
 //===========route=================
 // app.use(require(__dirname + '/routes/admin2'));
 app.use('/', require(__dirname + '/routes/admin2'));

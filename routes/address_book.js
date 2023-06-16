@@ -134,6 +134,37 @@ router.post('/add-try',multipartParser, async (req, res) => {
    res.json(req.body);
 })
 
+router.get('/edit/:sid', async (req, res) => {
+    let {sid} = req.params;
+    sid= parseInt(sid);
+    const [rows] = await db.query(`SELECT * FROM address_book WHERE sid='${sid}'`)
+    if(!rows.length){
+        return res.redirect(req.baseUrl);
+    }
+    res.render('address-book/edit',{row:rows[0]});
+//    res.render('address-book/add-try');
+});
+
+router.put('/:sid', async(req,res)=>{
+    let {sid} = req.params;
+    sid=parseInt(sid);
+    const [rows] = await db.query(`SELECT * FROM address_book WHERE sid='${sid}'`)
+    if(!rows.length){
+        return res.json({msg:"wrong sid"});
+    }
+
+    let row = {...rows[0], ...req.body};
+
+    const sql = `UPDATE\`address_book\` SET? WHERE sid=?`;
+    const [result] = await db.query(sql, [row,sid]);
+
+    res.json({
+        success: !! result.changedRows,
+        result,
+        'body':req.body
+    })
+})
+
 router.delete('/:sid',async (req,res)=>{
     const {sid} = req.params;
     const sql = "DELETE FROM `address_book` WHERE `sid`=?"
@@ -151,4 +182,28 @@ router.get('/escape', async (req, res) => {
     })
 });
 
+
+router.get('/cate1', async (req, res)=>{
+  const [rows] = await db.query("SELECT * FROM categories ORDER BY sid");
+  // 先編成字典
+  const dict = {}
+  rows.forEach(i => {
+    dict[i.sid] = i
+  });
+
+  rows.forEach(i => {
+    const parent = dict[i.parent_sid];
+    if(parent) {
+      parent.nodes = parent.nodes || [];
+      parent.nodes.push(i);
+    }
+  });
+  const newAr = [];
+  rows.forEach(i => {
+    if(i.parent_sid=='0') {
+      newAr.push(i);
+    }
+  });
+  res.render('address-book/cate1',{dict, dataAr:newAr});
+});
 module.exports = router;
