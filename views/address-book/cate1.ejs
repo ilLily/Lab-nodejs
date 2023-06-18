@@ -1,0 +1,52 @@
+<%- include("../parts/html-head")%>
+    <%- include("../parts/navbar")%>
+
+<div class="container">
+    <div class="row">
+        <div class="col-6">
+            <form id="combo-container">
+
+            </form>
+        </div>
+    </div>
+</div>    
+<%- include("../parts/scripts")%>
+<script>
+    const comboContainer = document.querySelector("#combo-container");
+    const dataAr = <%-JSON.stringify(dataAr)%>;
+    const dict = <%-JSON.stringify(dict) %>
+    const values = {
+            val1: undefined,
+            val2: undefined,
+        }
+
+    function renderCombos(){
+
+        values.val1 = values.val1 || dataAr[0].sid;
+        values.val2 = values.val2 || dict[values.val1].nodes[0].sid;
+         return `
+        <select name="cate_1" id="cate_1" onchange="changeVal1(event)">
+            ${dataAr.map(i => `<option value="${i.sid}" ${values.val1 == i.sid ? 'selected' : ''}>${i.name}</option>`).join('')}
+        </select>
+
+        <select name="cate_2" id="cate_2" onchange="changeVal2(event)">
+            ${dict[values.val1].nodes.map(i => `<option value="${i.sid}" ${values.val2 == i.sid ? 'selected' : ''}>${i.name}</option>`).join('')}
+        </select>
+        `
+    }
+
+    comboContainer.innerHTML = renderCombos();
+
+        function changeVal1(event) {
+            values.val1 = event.currentTarget.value;
+            values.val2 = dict[values.val1].nodes[0].sid;
+            comboContainer.innerHTML = renderCombos();
+        }
+        function changeVal2(event) {
+            // console.log(event.currentTarget, event.currentTarget.value)
+            values.val2 = event.currentTarget.value;
+            comboContainer.innerHTML = renderCombos();
+        }
+</script>
+    
+            <%- include("../parts/html-foot")%>
