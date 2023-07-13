@@ -9,7 +9,7 @@ import: require('./') => ./folder/file 若副檔名是js檔或json檔，就可�
 
 ==MJS(2015) or ESM== 使用ES6的module
 export: export
-import: import {} from "./~~.js" =>副檔名一定要加！！
+import: import { xx as xx} from "./~~.js" =>副檔名一定要加！！
 * 若CJS 跟 ESM 混用的時候，ESM的副檔名要改 .msj
 
 

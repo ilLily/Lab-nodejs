@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Item</title>
+</head>
+<body>
+    <button onclick="getData(event)">拿資料</button> 
+    <pre id="info"></pre>
+
+    <script>
+        let auth = {};
+        const authStr = localStorage.getItem('auth');
+        if(authStr){
+            try{
+                auth= JSON.parse(authStr)
+            }catch(ex){}
+        }
+
+
+        function getData(){
+           
+             fetch('/addressBook/api/verify/32',{
+                headers:{
+                    Authorization: 'Bearer '+auth.token
+                }
+             })
+            .then(r=>r.json())
+            .then(data=>{
+            info.innerHTML = JSON.stringify(data, null, 4);
+             })
+        }
+       
+    </script>
+</body>
+</html>

@@ -21,6 +21,7 @@ const db = require(__dirname + "/modules/db_connect");
 const sessionStore = new MysqlStore({}, db);
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 app.set('view engine', 'ejs');
 
 
@@ -60,6 +61,23 @@ app.use((req,res,next)=>{
         const fm = "YYYY-MM-DD HH:mm:ss";
         const djs = dayjs(d);
         return djs.format(fm);
+    }
+
+    const auth = req.get('Authorization');
+    console.log('auth:', auth);
+
+    
+    if(auth && auth.indexOf('Bearer ')===0){
+        const token = auth.slice(7);
+        let jwtData = null;
+        
+        try{
+            jwtData = jwt.verify(token,process.env.JWT_SECRET)
+        }catch(ex){}
+
+        if(jwtData){
+            res.locals.jwtData = jwtData;
+        }
     }
     next();
 })
@@ -143,7 +161,7 @@ app.get('/test-moment', (req, res) => {
 
 //非同步 (db.query會回傳兩組陣列, 第一組是資料-rows, 第二組是field-DB欄位的資枓, 不需要的話,接資料的陣列[], 放一個變數就好);
 app.get('/test-db', async (req, res) => {
-    const [data] = await db.query("SELECT * FROM `ord_cart` LIMIT 2")
+    const [data] = await db.query("SELECT * FROM `address_book` LIMIT 2")
     res.json(data);
 })
 
@@ -170,6 +188,7 @@ app.get('/try-bcrypt2', async(req,res)=>{
 app.use('/', require(__dirname + '/routes/admin2'));
 app.use('/admin/a', require(__dirname + '/routes/admin3'));
 app.use('/addressBook', require(__dirname + '/routes/address_book'))
+app.use('/products', require(__dirname + '/routes/products'))
 
 //==========test-POST===============
 
@@ -211,7 +230,52 @@ app.post('/file-uploads', upload.array('photo', 10), (req, res) => {
     res.json(req.files.map(fn => fn.filename))
 
 })
+//========= login-verification =======
 
+app.post('/login', async(req,res)=>{
+    const output = {
+        success: false,
+        code:0,
+        error: ''
+    }
+
+    if(!req.body.email || !req.body.password){
+        output.error = "欄位資料不足";
+        return res.json(output);
+    }
+
+    const sql = "SELECT * FROM members WHERE email=?";
+    const [rows] = await db.query( sql, [req.body.email]);
+    if(!rows.length){
+        output.code = 402;
+        output.error = "帳號或密碼錯誤";
+        return res.json(output);
+
+    }
+    const verified = await bcrypt.compare(req.body.password, rows[0].password);
+    if(!verified){
+        output.code=406;
+        output.error = "帳號或密碼錯誤";
+        return res.json(output);
+    }
+    output.success = true;
+
+    //包jwt傳給前端
+    const token = jwt.sign({
+        id:rows[0].id,
+        email: rows[0].email
+    }, process.env.JWT_SECRET);
+
+
+    output.data = {
+        id: rows[0].id,
+        email: rows[0].email,
+        nickname: rows[0].nickname,
+        token,
+    }
+    res.json(output);
+
+})
 //========= static ===========
 
 app.use(express.static('public'));

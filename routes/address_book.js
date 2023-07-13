@@ -61,11 +61,72 @@ router.use((req,res,next)=>{
 
 router.get('/api', async(req,res)=>{
     const output = await getListData(req);
-    output.totalRows.forEach(i=>{
+    output.row.forEach(i=>{
         i.birthday = dayjs(i.birthday).format('YYYY-MM-DD');
         delete i.created_at;
     })
+    res.json(output);
 })
+
+router.get('/api/:sid', async(req,res)=>{
+    const output = {
+        success: false,
+        error: "",
+        data: null
+    };
+    const sid = parseInt(req.params.sid) || 0;
+    if(!sid){
+        output.error = "錯誤的id";
+        return res.json(output)
+    }
+
+    const sql =  `SELECT * FROM address_book WHERE sid=${sid}`;
+    const [rows] = await db.query(sql);
+    if(! rows.length){
+        output.error = "沒有資料"
+        return res.json(output);
+    }
+    rows[0].birthday = dayjs(rows[0].birthday).format('YYYY-MM-DD');
+    output.success = true;
+    output.data = rows[0];
+    
+    res.json(output);
+})
+
+//=====verify before get data======
+router.get('/api/verify/:sid', async(req,res)=>{
+    const output = {
+        success: false,
+        error: "",
+        data: null
+    };
+
+    if(!res.locals.jwtData){
+        output.error = '沒有token驗證'
+        return res.json(output);
+    }else{
+        output.jwtData = res.locals.jwtData;
+    }
+
+    const sid = parseInt(req.params.sid) || 0;
+    if(!sid){
+        output.error = "錯誤的id";
+        return res.json(output)
+    }
+
+    const sql =  `SELECT * FROM address_book WHERE sid=${sid}`;
+    const [rows] = await db.query(sql);
+    if(! rows.length){
+        output.error = "沒有資料"
+        return res.json(output);
+    }
+    rows[0].birthday = dayjs(rows[0].birthday).format('YYYY-MM-DD');
+    output.success = true;
+    output.data = rows[0];
+    
+    res.json(output);
+})
+
 router.get('/', async (req, res) => {
    const output = await getListData(req);
    if(output.redirect){
