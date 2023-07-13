@@ -245,7 +245,9 @@ app.post('/login', async(req,res)=>{
     }
 
     const sql = "SELECT * FROM members WHERE email=?";
-    const [rows] = await db.query( sql, [req.body.email]);
+   
+    const [rows] = await db.query(sql, [req.body.email]);
+    
     if(!rows.length){
         output.code = 402;
         output.error = "帳號或密碼錯誤";
